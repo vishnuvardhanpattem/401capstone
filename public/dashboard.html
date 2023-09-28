@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Search</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: url('bg.jpg') center/cover no-repeat;
+    min-height: 100vh;
+    
+    z-index: -5;
+  }
+  #container {
+    z-index: 5;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    
+    /* background-color: #f5f5f5 ; */
+    /* background: transparent; */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border: 5px solid black;
+  }
+    h1 {
+    text-align: center; 
+    color: black;
+    font-size: 2rem; 
+    font-weight: bold;
+  }
+  label {
+    display: block;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  input[type="text"] {
+    width: 95%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  button {
+    background-color: #31e74c; 
+    color: #fff; 
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #0056b3; 
+  }
+  #movieInfo {
+    margin-top: 20px;
+  }
+  h2 {
+    color: #007BFF; 
+  }
+  p {
+    margin: 10px 0;
+    font-family: sans-serif;
+    font-size: larger;
+    font-weight: bold;
+    color: #fff;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px 0;
+  }
+</style>
+</head>
+<body >
+<div id="container">
+  <h1>Movie Search</h1>
+  <label for="movieInput">Enter a movie title:</label>
+  <input type="text" id="movieInput">
+  <button id="searchButton">Search</button>
+  <div id="movieInfo"></div>
+</div>
+<script>
+  const apiKey = '6fe4defd';
+  // const movieApiKey = '7e25daf30c527cea2d28621d4afa6cf3';
+  const searchButton = document.getElementById('searchButton');
+  const movieInput = document.getElementById('movieInput');
+  const movieInfo = document.getElementById('movieInfo');
+
+  searchButton.addEventListener('click', () => {
+    const movieTitle = movieInput.value;
+    if (movieTitle.trim() === '') {
+      alert('Please enter a movie title.');
+      return;
+    }
+    
+    const apiUrl = `http://www.omdbapi.com/?t=${encodeURIComponent(movieTitle)}&apikey=${apiKey}`;
+    // const apiUrl = `https://api.themoviedb.org/3/search/movie?api_key=${movieApiKey}&query=${movieTitle}`
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => {
+        if (data.Response === 'True') {
+          movieInfo.innerHTML = `
+            <h2>${data.Title}</h2>
+            <p><strong>Year:</strong> ${data.Year}</p>
+            <p><strong>Genre:</strong> ${data.Genre}</p>
+            <p><strong>Director:</strong> ${data.Director}</p>
+            <p><strong>Plot:</strong> ${data.Plot}</p>
+            <img src="${data.Poster}" alt="${data.Title} Poster">
+          `;
+        } else {
+          movieInfo.innerHTML = '<p>Movie not found.</p>';
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        movieInfo.innerHTML = '<p>An error occurred while fetching data.</p>';
+      });
+  });
+</script>
+</body>
+</html>
